@@ -1,5 +1,5 @@
 src/core/engines/gows/proto
-.env
+# .env
 *.heapsnapshot
 .yarn
 example.ts
@@ -21,7 +21,8 @@ src/dashboard
 __pycache__
 
 # compiled output
-/dist
+/dist/*
+!/dist/dashboard/
 /node_modules
 
 # Logs
