@@ -1,3 +1,15 @@
+/**
+    * @description      : 
+    * @author           : 
+    * @group            : 
+    * @created          : 06/04/2025 - 12:02:43
+    * 
+    * MODIFICATION LOG
+    * - Version         : 1.0.0
+    * - Date            : 06/04/2025
+    * - Author          : 
+    * - Modification    : 
+**/
 import { isJidBroadcast } from '@adiwajshing/baileys/lib/WABinary/jid-utils';
 import {
   Channel,
@@ -98,8 +110,12 @@ import { DataStore } from './DataStore';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const qrcode = require('qrcode-terminal');
 
-const CHROME_PATH = '/usr/bin/google-chrome-stable';
-const CHROMIUM_PATH = '/usr/bin/chromium';
+// const CHROME_PATH = '/usr/bin/google-chrome-stable';
+// const CHROME_PATH = "/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome";
+// const CHROMIUM_PATH = '/usr/bin/chromium';
+
+const CHROME_PATH = process.env.CHROME_PATH!;
+const CHROMIUM_PATH = process.env.CHROMIUM_PATH!;
 
 export function getBrowserExecutablePath() {
   if (fs.existsSync(CHROME_PATH)) {

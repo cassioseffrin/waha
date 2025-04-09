@@ -1,3 +1,15 @@
+/**
+    * @description      : 
+    * @author           : 
+    * @group            : 
+    * @created          : 06/04/2025 - 12:19:52
+    * 
+    * MODIFICATION LOG
+    * - Version         : 1.0.0
+    * - Date            : 06/04/2025
+    * - Author          : 
+    * - Modification    : 
+**/
 import { UnprocessableEntityException } from '@nestjs/common';
 import {
   getChannelInviteLink,
@@ -113,6 +125,11 @@ export interface WebJSConfig {
   webVersion?: string;
   cacheType: 'local' | 'none';
 }
+
+
+
+import axios from 'axios';
+import mime from 'mime-types'; // Optional, helps resolve mime type from filename
 
 export class WhatsappSessionWebJSCore extends WhatsappSession {
   private START_ATTEMPT_DELAY_SECONDS = 2;
@@ -529,9 +546,29 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
     );
   }
 
-  sendImage(request: MessageImageRequest) {
-    throw new AvailableInPlusVersion();
+  // sendImage(request: MessageImageRequest) {
+  //   throw new AvailableInPlusVersion();
+  // }
+  async sendImage(request: MessageImageRequest) {
+    const { chatId, caption, reply_to, file } = request;
+
+    const fileany = request as any;
+    // const url = 'https://fotosprovin.repag.com.br/getImage?filename=202154.jpg';
+    const url = fileany?.file?.url ?? 'https://repag.com.br/ex.jpg';   
+    const response = await axios.get(url, { responseType: 'arraybuffer' });
+    const base64 = Buffer.from(response.data, 'binary').toString('base64');
+    const mimeType = file.mimetype || mime.lookup(file.filename) || 'image/jpeg';
+    const media = new MessageMedia(mimeType, base64, file.filename);
+    const options: any = {
+      media,
+      caption,
+    };
+    if (reply_to) {
+      options.quotedMessageId = reply_to;
+    }
+    return this.whatsapp.sendMessage(this.ensureSuffix(chatId), '', options);
   }
+
 
   sendFile(request: MessageFileRequest) {
     throw new AvailableInPlusVersion();
@@ -1460,8 +1497,7 @@ export class WhatsappSessionWebJSCore extends WhatsappSession {
 }
 
 export class WEBJSEngineMediaProcessor
-  implements IMediaEngineProcessor<Message>
-{
+  implements IMediaEngineProcessor<Message> {
   hasMedia(message: Message): boolean {
     if (!message.hasMedia) {
       return false;
